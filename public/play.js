@@ -21,6 +21,7 @@ class Game {
   #sequence;
   #playerPlaybackPos;
   #mistakeSound;
+  #socket;
 
   constructor() {
     this.#buttons = new Map();
@@ -39,6 +40,24 @@ class Game {
 
     const playerNameEl = document.querySelector('.player-name');
     playerNameEl.textContent = this.#getPlayerName();
+
+    const protocol = window.location.protocol === 'http:' ? 'ws' : 'wss';
+    this.#socket = new WebSocket(`${protocol}://${window.location.host}/ws`);
+    this.#socket.onopen = (event) => {
+      this.#appendMsg('system', 'websocket', 'connected');
+    };
+    this.#socket.onmessage = async (event) => {
+      const text = await event.data.text();
+      const chat = JSON.parse(text);
+      this.#appendMsg('friend', chat.name, chat.msg);
+    };
+  }
+
+  #appendMsg(cls, from, msg) {
+    const chatText = document.querySelector('#ws-debug');
+    chatText.innerHTML =
+      `<div><span class="${cls}">${from}</span>: ${msg}</div>` +
+      chatText.innerHTML;
   }
 
   async pressButton(button) {
