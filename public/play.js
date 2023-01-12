@@ -1,3 +1,7 @@
+// Event messages
+const GameEndEvent = 'gameEnd';
+const GameStartEvent = 'gameStart';
+
 class Button {
   constructor(soundUrl, el) {
     this.el = el;
@@ -41,23 +45,7 @@ class Game {
     const playerNameEl = document.querySelector('.player-name');
     playerNameEl.textContent = this.#getPlayerName();
 
-    const protocol = window.location.protocol === 'http:' ? 'ws' : 'wss';
-    this.#socket = new WebSocket(`${protocol}://${window.location.host}/ws`);
-    this.#socket.onopen = (event) => {
-      this.#appendMsg('system', 'websocket', 'connected');
-    };
-    this.#socket.onmessage = async (event) => {
-      const text = await event.data.text();
-      const chat = JSON.parse(text);
-      this.#appendMsg('friend', chat.name, chat.msg);
-    };
-  }
-
-  #appendMsg(cls, from, msg) {
-    const chatText = document.querySelector('#ws-debug');
-    chatText.innerHTML =
-      `<div><span class="${cls}">${from}</span>: ${msg}</div>` +
-      chatText.innerHTML;
+    this.#configureWebSocket();
   }
 
   async pressButton(button) {
@@ -86,11 +74,14 @@ class Game {
     this.#allowPlayer = false;
     this.#playerPlaybackPos = 0;
     this.#sequence = [];
-    this.#updateScore('--');
+    this.#updateScore('00');
     await this.#buttonDance(1);
     this.#addNote();
     await this.#playSequence(1000);
     this.#allowPlayer = true;
+
+    // Let other players know a new game has started
+    this.#broadcastEvent(this.#getPlayerName(), GameStartEvent, {});
   }
 
   async #playSequence(delayMs = 0) {
@@ -141,6 +132,9 @@ class Game {
         body: JSON.stringify(newScore),
       });
 
+      // Let other players know the game has concluded
+      this.#broadcastEvent(userName, GameEndEvent, newScore);
+
       // Store what the service gave us as the high scores
       const scores = await response.json();
       localStorage.setItem('scores', JSON.stringify(scores));
@@ -175,6 +169,43 @@ class Game {
     }
 
     localStorage.setItem('scores', JSON.stringify(scores));
+  }
+
+  // Functionality for peer communication using WebSocket
+
+  #configureWebSocket() {
+    const protocol = window.location.protocol === 'http:' ? 'ws' : 'wss';
+    this.#socket = new WebSocket(`${protocol}://${window.location.host}/ws`);
+    this.#socket.onopen = (event) => {
+      this.#displayMsg('system', 'game', 'connected');
+    };
+    this.#socket.onclose = (event) => {
+      this.#displayMsg('system', 'game', 'disconnected');
+    };
+    this.#socket.onmessage = async (event) => {
+      const msg = JSON.parse(await event.data.text());
+      if (msg.type === GameEndEvent) {
+        this.#displayMsg('player', msg.from, `scored ${msg.value.score}`);
+      } else if (msg.type === GameStartEvent) {
+        this.#displayMsg('player', msg.from, `started a new game`);
+      }
+    };
+  }
+
+  #displayMsg(cls, from, msg) {
+    const chatText = document.querySelector('#player-messages');
+    chatText.innerHTML =
+      `<div class="event"><span class="${cls}-event">${from}</span> ${msg}</div>` +
+      chatText.innerHTML;
+  }
+
+  #broadcastEvent(from, type, value) {
+    const event = {
+      from: from,
+      type: type,
+      value: value,
+    };
+    this.#socket.send(JSON.stringify(event));
   }
 }
 

@@ -1,4 +1,5 @@
 const { WebSocketServer } = require('ws');
+const uuid = require('uuid');
 
 class PeerProxy {
   constructor(httpServer) {
@@ -16,7 +17,7 @@ class PeerProxy {
     let connections = [];
 
     wss.on('connection', (ws) => {
-      const connection = { id: connections.length + 1, alive: true, ws: ws };
+      const connection = { id: uuid.v4(), alive: true, ws: ws };
       connections.push(connection);
 
       // Forward messages to everyone except the sender

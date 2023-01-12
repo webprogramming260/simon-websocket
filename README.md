@@ -7,3 +7,6 @@ Simon with peer communication using WebSocket
 - Make httpService a class
 - Create peerProxy
 - load peerProxy from index.js
+- implemented websocket in peerProxy
+- Added generation and receiving of game events
+- Display game events for all users
