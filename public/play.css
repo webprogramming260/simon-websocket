@@ -13,12 +13,12 @@
 }
 
 #player-messages {
-  padding-top: .25em;
-  opacity: .7;
+  padding-top: 0.25em;
+  opacity: 0.7;
 }
 
 .event {
-  color:rgb(69, 69, 69)
+  color: rgb(69, 69, 69);
 }
 
 .player-event {
@@ -36,8 +36,8 @@
   width: 80vw;
   height: 80vw;
   position: absolute;
-  min-width: 350px;
-  min-height: 350px;
+  min-width: 300px;
+  min-height: 300px;
   max-width: min(80vmin, 1000px);
   max-height: min(80vmin, 1000px);
 }
@@ -68,7 +68,7 @@
   border-radius: 0 0 0 100%;
   margin: 0 0 20px 20px;
   background-color: yellow;
-  border: thick solid rgb(130, 124, 13);
+  border: thick solid rgb(94, 90, 10);
 }
 
 .button-bottom-right {
