@@ -44,45 +44,23 @@
       </div>
       <div class="game">
         <div class="button-container">
-          <button
-            id="green"
-            class="game-button button-top-left"
-            onclick="game.pressButton(this)"
-          ></button>
-          <button
-            id="red"
-            class="game-button button-top-right"
-            onclick="game.pressButton(this)"
-          ></button>
-          <button
-            id="yellow"
-            class="game-button button-bottom-left"
-            onclick="game.pressButton(this)"
-          ></button>
-          <button
-            id="blue"
-            class="game-button button-bottom-right"
-            onclick="game.pressButton(this)"
-          ></button>
+          <button id="green" class="game-button button-top-left" onclick="game.pressButton(this)"></button>
+          <button id="red" class="game-button button-top-right" onclick="game.pressButton(this)"></button>
+          <button id="yellow" class="game-button button-bottom-left" onclick="game.pressButton(this)"></button>
+          <button id="blue" class="game-button button-bottom-right" onclick="game.pressButton(this)"></button>
           <div class="controls center">
             <div class="game-name">Simon<sup>&reg;</sup></div>
             <div id="score" class="score center">--</div>
-            <button class="btn btn-primary" onclick="game.reset()">
-              Reset
-            </button>
+            <button class="btn btn-primary" onclick="game.reset()">Reset</button>
           </div>
         </div>
       </div>
     </main>
 
-    <footer class="bg-dark text-dark text-muted">
+    <footer class="bg-dark text-white-50">
       <div class="container-fluid">
         <span class="text-reset">Author Name(s)</span>
-        <a
-          class="text-reset"
-          href="https://github.com/webprogramming260/simon-websocket"
-          >Source</a
-        >
+        <a class="text-reset" href="https://github.com/webprogramming260/simon-websocket">Source</a>
       </div>
     </footer>
 
