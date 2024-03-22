@@ -30,12 +30,11 @@ function peerProxy(httpServer) {
 
     // Remove the closed connection so we don't try to forward anymore
     ws.on('close', () => {
-      connections.findIndex((o, i) => {
-        if (o.id === connection.id) {
-          connections.splice(i, 1);
-          return true;
-        }
-      });
+      const pos = connections.findIndex((o, i) => o.id === connection.id);
+
+      if (pos >= 0) {
+        connections.splice(pos, 1);
+      }
     });
 
     // Respond to pong messages by marking the connection alive
