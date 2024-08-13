@@ -1,6 +1,15 @@
+# dependencies
+node_modules
+/.pnp
+.pnp.js
+
+# production
+/build
+/dist
+
+# misc
 .DS_Store
-node_modules/
-.vscode/
-dbkeys.sh
-cookie.txt
+
+npm-debug.log*
+.vscode
 dbConfig.json
