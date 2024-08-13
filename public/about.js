@@ -2,14 +2,14 @@
   https://picsum.photos/
  */
 function displayPicture(data) {
-  const containerEl = document.querySelector("#picture");
+  const containerEl = document.querySelector('#picture');
 
   const width = containerEl.offsetWidth;
   const height = containerEl.offsetHeight;
 
   const imgUrl = `https://picsum.photos/id/${data[0].id}/${width}/${height}?grayscale`;
-  const imgEl = document.createElement("img");
-  imgEl.setAttribute("src", imgUrl);
+  const imgEl = document.createElement('img');
+  imgEl.setAttribute('src', imgUrl);
   containerEl.appendChild(imgEl);
 }
 
@@ -17,14 +17,14 @@ function displayPicture(data) {
   https://github.com/lukePeavey/quotable
  */
 function displayQuote(data) {
-  const containerEl = document.querySelector("#quote");
+  const containerEl = document.querySelector('#quote');
 
-  const quoteEl = document.createElement("p");
-  quoteEl.classList.add("quote");
-  const authorEl = document.createElement("p");
-  authorEl.classList.add("author");
+  const quoteEl = document.createElement('p');
+  quoteEl.classList.add('quote');
+  const authorEl = document.createElement('p');
+  authorEl.classList.add('author');
 
-  quoteEl.textContent = data.content;
+  quoteEl.textContent = data.quote;
   authorEl.textContent = data.author;
 
   containerEl.appendChild(quoteEl);
@@ -40,8 +40,5 @@ function callService(url, displayCallback) {
 }
 
 const random = Math.floor(Math.random() * 1000);
-callService(
-  `https://picsum.photos/v2/list?page=${random}&limit=1`,
-  displayPicture
-);
-callService("https://api.quotable.io/random", displayQuote);
+callService(`https://picsum.photos/v2/list?page=${random}&limit=1`, displayPicture);
+callService('https://quote.cs260.click', displayQuote);
