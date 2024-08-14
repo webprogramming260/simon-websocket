@@ -24,7 +24,7 @@ export function About(props) {
     fetch('https://quote.cs260.click')
       .then((response) => response.json())
       .then((data) => {
-        setQuote(data.content);
+        setQuote(data.quote);
         setQuoteAuthor(data.author);
       })
       .catch();
