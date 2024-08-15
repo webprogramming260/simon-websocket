@@ -61,17 +61,6 @@ apiRouter.delete('/auth/logout', (_req, res) => {
   res.status(204).end();
 });
 
-// GetUser returns information about a user
-apiRouter.get('/user/:email', async (req, res) => {
-  const user = await DB.getUser(req.params.email);
-  if (user) {
-    const token = req?.cookies.token;
-    res.send({ email: user.email, authenticated: token === user.token });
-    return;
-  }
-  res.status(404).send({ msg: 'Unknown' });
-});
-
 // secureApiRouter verifies credentials for endpoints
 const secureApiRouter = express.Router();
 apiRouter.use(secureApiRouter);
