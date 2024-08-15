@@ -48,3 +48,4 @@ ENDSSH
 # Step 5
 printf "\n----> Removing local copy of the distribution package\n"
 rm -rf build
+rm -rf dist

@@ -40,8 +40,8 @@ async function createUser(email, password) {
   return user;
 }
 
-function addScore(score) {
-  scoreCollection.insertOne(score);
+async function addScore(score) {
+  return scoreCollection.insertOne(score);
 }
 
 function getHighScores() {
