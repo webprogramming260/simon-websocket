@@ -1,6 +1,7 @@
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 const express = require('express');
+const uuid = require('uuid');
 const app = express();
 const DB = require('./database.js');
 const { peerProxy } = require('./peerProxy.js');
@@ -19,36 +20,31 @@ app.use(cookieParser());
 // Serve up the applications static content
 app.use(express.static('public'));
 
-// Trust headers that are forwarded from the proxy so we can determine IP addresses
-app.set('trust proxy', true);
-
 // Router for service endpoints
 const apiRouter = express.Router();
 app.use(`/api`, apiRouter);
 
 // CreateAuth token for a new user
 apiRouter.post('/auth/create', async (req, res) => {
-  if (await DB.getUser(req.body.email)) {
+  if (await findUser('email', req.body.email)) {
     res.status(409).send({ msg: 'Existing user' });
   } else {
-    const user = await DB.createUser(req.body.email, req.body.password);
+    const user = await createUser(req.body.email, req.body.password);
 
-    // Set the cookie
     setAuthCookie(res, user.token);
-
-    res.send({
-      id: user._id,
-    });
+    res.send({ email: user.email });
   }
 });
 
 // GetAuth token for the provided credentials
 apiRouter.post('/auth/login', async (req, res) => {
-  const user = await DB.getUser(req.body.email);
+  const user = await findUser('email', req.body.email);
   if (user) {
     if (await bcrypt.compare(req.body.password, user.password)) {
+      user.token = uuid.v4();
+      await DB.updateUser(user);
       setAuthCookie(res, user.token);
-      res.send({ id: user._id });
+      res.send({ email: user.email });
       return;
     }
   }
@@ -56,36 +52,35 @@ apiRouter.post('/auth/login', async (req, res) => {
 });
 
 // DeleteAuth token if stored in cookie
-apiRouter.delete('/auth/logout', (_req, res) => {
+apiRouter.delete('/auth/logout', async (req, res) => {
+  const user = await findUser('token', req.cookies[authCookieName]);
+  if (user) {
+    delete user.token;
+    DB.updateUser(user);
+  }
   res.clearCookie(authCookieName);
   res.status(204).end();
 });
 
-// secureApiRouter verifies credentials for endpoints
-const secureApiRouter = express.Router();
-apiRouter.use(secureApiRouter);
-
-secureApiRouter.use(async (req, res, next) => {
-  const authToken = req.cookies[authCookieName];
-  const user = await DB.getUserByToken(authToken);
+// Middleware to verify that the user is authorized to call an endpoint
+const verifyAuth = async (req, res, next) => {
+  const user = await findUser('token', req.cookies[authCookieName]);
   if (user) {
     next();
   } else {
     res.status(401).send({ msg: 'Unauthorized' });
   }
-});
+};
 
 // GetScores
-secureApiRouter.get('/scores', async (req, res) => {
+apiRouter.get('/scores', verifyAuth, async (req, res) => {
   const scores = await DB.getHighScores();
   res.send(scores);
 });
 
 // SubmitScore
-secureApiRouter.post('/score', async (req, res) => {
-  const score = { ...req.body, ip: req.ip };
-  await DB.addScore(score);
-  const scores = await DB.getHighScores();
+apiRouter.post('/score', verifyAuth, async (req, res) => {
+  const scores = updateScores(req.body);
   res.send(scores);
 });
 
@@ -98,6 +93,34 @@ app.use(function (err, req, res, next) {
 app.use((_req, res) => {
   res.sendFile('index.html', { root: 'public' });
 });
+
+// updateScores considers a new score for inclusion in the high scores.
+async function updateScores(newScore) {
+  await DB.addScore(newScore);
+  return DB.getHighScores();
+}
+
+async function createUser(email, password) {
+  const passwordHash = await bcrypt.hash(password, 10);
+
+  const user = {
+    email: email,
+    password: passwordHash,
+    token: uuid.v4(),
+  };
+  await DB.addUser(user);
+
+  return user;
+}
+
+async function findUser(field, value) {
+  if (!value) return null;
+
+  if (field === 'token') {
+    return DB.getUserByToken(value);
+  }
+  return DB.getUser(value);
+}
 
 // setAuthCookie in the HTTP response
 function setAuthCookie(res, authToken) {
