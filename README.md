@@ -117,16 +117,14 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] **Calls to third party endpoints** - About page calls `quote.cs260.click`, renders the resulting JSON with React.
 - [x] **Backend service endpoints** - Simple endpoints in `service/index` for auth and scores. Persists to memory until I get database support.
 - [x] **Frontend calls service endpoints** - All mocked functionality removed from the frontend and replaced with calls to the service.
+- [x] **Supports registration, login, logout, and restricted endpoint** - Fully support authentication and restrict access to scores.
 
 ## 🚀 DB/Login deliverable
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [x] **User registration** - Service endpoints now add a user to the database.
-- [x] **User login and logout** - Service endpoints now generate and store auth tokens.
 - [x] **Stores data in MongoDB** - Scores stored in MongoDB from `service/database.js`.
 - [x] **Stores credentials in MongoDB** - Auth stored in MongoDB from `service/database.js`.
-- [x] **Restricts functionality based on authentication** - Cannot play a game unless authenticated.
 
 ## 🚀 WebSocket deliverable
 
