@@ -9,14 +9,14 @@ const scoreCollection = db.collection('score');
 
 // This will asynchronously test the connection and exit the process if it fails
 (async function testConnection() {
-  await client.connect();
-  await db.command({ ping: 1 });
-})().catch((ex) => {
-  console.log(
-    `Unable to connect to database with ${url} because ${ex.message}`
-  );
-  process.exit(1);
-});
+  try {
+    await db.command({ ping: 1 });
+    console.log(`Connect to database`);
+  } catch (ex) {
+    console.log(`Unable to connect to database with ${url} because ${ex.message}`);
+    process.exit(1);
+  }
+})();
 
 function getUser(email) {
   return userCollection.findOne({ email: email });
