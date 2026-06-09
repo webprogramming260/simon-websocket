@@ -119,7 +119,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] **Frontend calls service endpoints** - All mocked functionality removed from the frontend and replaced with calls to the service.
 - [x] **Supports registration, login, logout, and restricted endpoint** - Fully support authentication and restrict access to scores.
 
-## 🚀 DB/Login deliverable
+## 🚀 DB deliverable
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
